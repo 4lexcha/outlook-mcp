@@ -4,21 +4,27 @@
 const path = require('path');
 const os = require('os');
 
+// Load env file (server-folder .env by default, M365_ENV_FILE to override),
+// before reading any process.env below.
+const { loadServerEnv } = require('./env');
+loadServerEnv();
+
 // Ensure we have a home directory path even if process.env.HOME is undefined
 const homeDir = process.env.HOME || process.env.USERPROFILE || os.homedir() || '/tmp';
 
 module.exports = {
   // Server information
   SERVER_NAME: "m365-assistant",
-  SERVER_VERSION: "2.0.0",
+  SERVER_VERSION: "2.1.0",
   
   // Test mode setting
   USE_TEST_MODE: process.env.USE_TEST_MODE === 'true',
   
   // Authentication configuration
   AUTH_CONFIG: {
-    clientId: process.env.OUTLOOK_CLIENT_ID || '',
-    clientSecret: process.env.OUTLOOK_CLIENT_SECRET || '',
+    // MS_* is the canonical prefix; OUTLOOK_* kept as legacy synonyms (INF-127)
+    clientId: process.env.MS_CLIENT_ID || process.env.OUTLOOK_CLIENT_ID || '',
+    clientSecret: process.env.MS_CLIENT_SECRET || process.env.OUTLOOK_CLIENT_SECRET || '',
     redirectUri: 'http://localhost:3333/auth/callback',
     scopes: [
       'offline_access',
@@ -55,7 +61,7 @@ module.exports = {
   MAX_RESULT_COUNT: 50,
 
   // Timezone
-  DEFAULT_TIMEZONE: "Central European Standard Time",
+  DEFAULT_TIMEZONE: "Russian Standard Time",
 
   // OneDrive constants
   ONEDRIVE_SELECT_FIELDS: 'id,name,size,lastModifiedDateTime,webUrl,folder,file,parentReference',

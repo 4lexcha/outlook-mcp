@@ -213,6 +213,20 @@ USE_TEST_MODE=false
 - For Claude Desktop config, you'll use `OUTLOOK_CLIENT_ID` and `OUTLOOK_CLIENT_SECRET`
 - Always use the client secret **VALUE**, never the Secret ID
 
+### 1.1 Where the `.env` File Is Resolved From
+
+The server resolves its environment file independently of the working directory:
+
+1. If `M365_ENV_FILE` is set (in the process environment or agent config), that file is loaded.
+2. Otherwise `.env` next to `config.js` (the server folder) is loaded.
+
+Rules:
+- **Only server-owned keys** (`MS_*`, `OUTLOOK_*`, `USE_TEST_MODE`) are taken from the file —
+  a shared workspace `.env` can hold other applications' keys safely.
+- **Process environment wins**: a variable already set in `process.env` (e.g. in the agent's
+  `env` config block or pm2 ecosystem file) is never overwritten by the file.
+- Legacy `OUTLOOK_*` variable names still work as synonyms of `MS_*`.
+
 ### 2. Claude Desktop Configuration
 
 Add to your Claude Desktop config:

@@ -7,8 +7,9 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
-// Load environment variables from .env file
-require('dotenv').config();
+// Load environment variables (server-folder .env by default, M365_ENV_FILE to override,
+// only server-owned keys; config.js does the same for the MCP entry point)
+require('./env').loadServerEnv();
 
 // Log to console
 console.log('Starting Outlook Authentication Server');
