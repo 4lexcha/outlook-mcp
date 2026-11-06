@@ -26,7 +26,8 @@ module.exports = {
       'Mail.Read', 'Mail.ReadWrite', 'Mail.Send',
       'Calendars.Read', 'Calendars.ReadWrite',
       'Contacts.Read',
-      'Files.Read', 'Files.ReadWrite'
+      'Files.Read', 'Files.ReadWrite',
+      'Tasks.ReadWrite'
     ],
     tokenStorePath: path.join(homeDir, '.outlook-mcp-tokens.json'),
     authServerUrl: 'http://localhost:3333'
@@ -36,14 +37,18 @@ module.exports = {
   GRAPH_API_ENDPOINT: 'https://graph.microsoft.com/v1.0/',
   
   // Calendar constants
-  CALENDAR_SELECT_FIELDS: 'id,subject,start,end,location,bodyPreview,isAllDay,recurrence,attendees',
+  CALENDAR_SELECT_FIELDS: 'id,subject,bodyPreview,start,end,location,organizer,attendees,isAllDay,isCancelled,recurrence',
 
   // Email constants
   EMAIL_SELECT_FIELDS: 'id,subject,from,toRecipients,ccRecipients,receivedDateTime,bodyPreview,hasAttachments,importance,isRead',
   EMAIL_DETAIL_FIELDS: 'id,subject,from,toRecipients,ccRecipients,bccRecipients,receivedDateTime,bodyPreview,body,hasAttachments,importance,isRead,internetMessageHeaders',
-  
-  // Calendar constants
-  CALENDAR_SELECT_FIELDS: 'id,subject,bodyPreview,start,end,location,organizer,attendees,isAllDay,isCancelled',
+
+  // Microsoft To Do constants
+  TODO_LIST_SELECT_FIELDS: 'id,displayName,isOwner,wellknownListName',
+  TODO_TASK_SELECT_FIELDS: 'id,title,status,importance,body,dueDateTime,completedDateTime,createdDateTime,lastModifiedDateTime,isReminderOn',
+
+  // Calendar constants (duplicate key removed 2026-11-06: union of both upstream variants,
+  // the second one was the effective value before the fix)
   
   // Pagination
   DEFAULT_PAGE_SIZE: 25,
