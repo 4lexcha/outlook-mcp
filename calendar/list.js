@@ -32,7 +32,10 @@ async function handleListEvents(args) {
       };
     }
 
-    let endpoint = 'me/calendarView';
+    // A specific calendar (e.g. the separate working-hours calendar) or the default one
+    const endpoint = args.calendarId
+      ? `me/calendars/${encodeURIComponent(args.calendarId)}/calendarView`
+      : 'me/calendarView';
 
     // calendarView requires startDateTime and endDateTime as query params
     const queryParams = {
