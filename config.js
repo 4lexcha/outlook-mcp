@@ -15,7 +15,7 @@ const homeDir = process.env.HOME || process.env.USERPROFILE || os.homedir() || '
 module.exports = {
   // Server information
   SERVER_NAME: "m365-assistant",
-  SERVER_VERSION: "2.1.0",
+  SERVER_VERSION: "2.2.0",
   
   // Test mode setting
   USE_TEST_MODE: process.env.USE_TEST_MODE === 'true',

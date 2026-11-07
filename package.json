@@ -1,6 +1,6 @@
 {
   "name": "m365-mcp",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "MCP server for Claude to access Microsoft 365 (Outlook, OneDrive, Power Automate) via Microsoft Graph API",
   "main": "index.js",
   "bin": {
@@ -28,7 +28,9 @@
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
-    "dotenv": "^16.5.0"
+    "dotenv": "^16.5.0",
+    "express": "^5.2.1",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@modelcontextprotocol/inspector": "^0.21.2",
