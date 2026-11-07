@@ -13,7 +13,9 @@ const fs = require('fs');
 const path = require('path');
 
 // Keys this server owns. Everything else in a .env file is ignored.
+// M365_ENV_FILE is special: a pointer to another env file (see loadServerEnv).
 const SERVER_ENV_KEYS = [
+  'M365_ENV_FILE',
   'MS_CLIENT_ID',
   'MS_CLIENT_SECRET',
   'MS_TENANT_ID',
@@ -48,22 +50,29 @@ function parseEnvFile(content) {
 
 /**
  * Load env vars into process.env.
- * Order: M365_ENV_FILE (if set) -> .env in the server folder.
+ *
+ * Resolution order (first file wins per key; process.env always wins):
+ * 1. M365_ENV_FILE from the process environment (e.g. pm2/agent config),
+ * 2. .env in the server folder,
+ * 3. if the server-folder .env itself set M365_ENV_FILE (pointer pattern —
+ *    a deployment folder keeps one non-secret pointer line), that target
+ *    file is applied after (lower priority than both above).
+ *
  * Existing process.env values are never overwritten.
  * @returns {string[]} keys that were applied (for diagnostics)
  */
 function loadServerEnv({ envFilePath } = {}) {
+  const applied = [];
+  const serverEnvPath = envFilePath || path.join(__dirname, '.env');
   const candidates = [];
   if (process.env.M365_ENV_FILE) {
     candidates.push(process.env.M365_ENV_FILE);
   }
-  if (!envFilePath) {
-    envFilePath = path.join(__dirname, '.env');
-  }
-  candidates.push(envFilePath);
+  candidates.push(serverEnvPath);
 
-  const applied = [];
-  for (const candidate of candidates) {
+  let pointerFollowed = false;
+  for (let i = 0; i < candidates.length; i++) {
+    const candidate = candidates[i];
     let content;
     try {
       content = fs.readFileSync(candidate, 'utf8');
@@ -76,11 +85,20 @@ function loadServerEnv({ envFilePath } = {}) {
       continue;
     }
     const parsed = parseEnvFile(content);
+    const appliedHere = [];
     for (const key of SERVER_ENV_KEYS) {
       if (key in parsed && process.env[key] === undefined) {
         process.env[key] = parsed[key];
         applied.push(key);
+        appliedHere.push(key);
       }
+    }
+    // Pointer discovered in the default server-folder .env: follow it once,
+    // after the files already queued (lower priority).
+    if (candidate === serverEnvPath && !pointerFollowed &&
+        appliedHere.includes('M365_ENV_FILE') && process.env.M365_ENV_FILE) {
+      pointerFollowed = true;
+      candidates.push(process.env.M365_ENV_FILE);
     }
   }
   return applied;

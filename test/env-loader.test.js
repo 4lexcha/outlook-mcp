@@ -95,4 +95,27 @@ describe('env-loader', () => {
 
     consoleErrorSpy.mockRestore();
   });
+
+  test('pointer pattern: server-folder .env with M365_ENV_FILE defers to the target file', () => {
+    // Server .env holds only a (non-secret) pointer; the target holds credentials
+    REAL_FS.writeFileSync(serverEnvPath, `M365_ENV_FILE=${workspaceEnvPath.replace(/\\/g, '/')}\n`);
+
+    const { loadServerEnv } = loadLoader();
+    const applied = loadServerEnv({ envFilePath: serverEnvPath });
+
+    expect(process.env.MS_CLIENT_ID).toBe('workspace-id');
+    expect(process.env.MS_TENANT_ID).toBe('workspace-tenant');
+    expect(applied).toContain('MS_CLIENT_ID');
+  });
+
+  test('process-level M365_ENV_FILE beats a pointer inside the server-folder .env', () => {
+    REAL_FS.writeFileSync(serverEnvPath, `M365_ENV_FILE=${workspaceEnvPath.replace(/\\/g, '/')}\nMS_CLIENT_ID=server-local-override\n`);
+    process.env.M365_ENV_FILE = workspaceEnvPath;
+
+    const { loadServerEnv } = loadLoader();
+    loadServerEnv({ envFilePath: serverEnvPath });
+
+    // pointer file wins per key, server .env fills the rest
+    expect(process.env.MS_CLIENT_ID).toBe('workspace-id');
+  });
 });
