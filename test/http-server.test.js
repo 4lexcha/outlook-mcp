@@ -36,7 +36,7 @@ describe('http-server (Streamable HTTP service)', () => {
     expect(res.headers['mcp-session-id']).toBeDefined();
     const body = JSON.parse(res.text);
     expect(body.result.serverInfo.name).toBe('m365-assistant');
-    expect(body.result.serverInfo.version).toBe('2.2.1');
+    expect(body.result.serverInfo.version).toBe('2.2.2');
   });
 
   test('tools/list within the session returns the full tool registry', async () => {
