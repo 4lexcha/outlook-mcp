@@ -19,8 +19,8 @@ describe('Calendar listing', () => {
     test('lists calendars with ids and default marker', async () => {
       callGraphAPI.mockResolvedValue({
         value: [
-          { id: 'cal-A', displayName: 'Calendar', isDefaultCalendar: true },
-          { id: 'cal-B', displayName: 'Рабочий', isDefaultCalendar: false }
+          { id: 'cal-A', name: 'Calendar', isDefaultCalendar: true },
+          { id: 'cal-B', name: 'Рабочий', isDefaultCalendar: false }
         ]
       });
 
@@ -28,7 +28,7 @@ describe('Calendar listing', () => {
 
       expect(callGraphAPI).toHaveBeenCalledWith(
         mockAccessToken, 'GET', 'me/calendars', null,
-        { $top: 25, $select: 'id,displayName,color,isDefaultCalendar' }
+        { $top: 25, $select: 'id,name,color,isDefaultCalendar' }
       );
       expect(result.content[0].text).toContain('Found 2 calendars');
       expect(result.content[0].text).toContain('Calendar [default]');

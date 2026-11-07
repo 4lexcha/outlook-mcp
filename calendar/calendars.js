@@ -17,7 +17,8 @@ async function handleListCalendars(args = {}) {
 
     const response = await callGraphAPI(accessToken, 'GET', 'me/calendars', null, {
       $top: count,
-      $select: 'id,displayName,color,isDefaultCalendar'
+      // NB: the calendar entity uses `name` (displayName belongs to calendarGroup)
+      $select: 'id,name,color,isDefaultCalendar'
     });
 
     if (!response.value || response.value.length === 0) {
@@ -27,7 +28,7 @@ async function handleListCalendars(args = {}) {
     }
 
     const calendarList = response.value.map((calendar, index) => {
-      const name = calendar.displayName || '(unnamed calendar)';
+      const name = calendar.name || '(unnamed calendar)';
       const marker = calendar.isDefaultCalendar ? ' [default]' : '';
       return `${index + 1}. ${name}${marker}\nID: ${calendar.id}\n`;
     }).join('\n');
