@@ -5,8 +5,10 @@ const handleListEvents = require('./list');
 const handleListCalendars = require('./calendars');
 const handleDeclineEvent = require('./decline');
 const handleCreateEvent = require('./create');
+const handleUpdateEvent = require('./update');
 const handleCancelEvent = require('./cancel');
 const handleDeleteEvent = require('./delete');
+const { recurrenceToolProperty } = require('../utils/recurrence');
 
 // Calendar tool definitions
 const calendarTools = [
@@ -99,11 +101,60 @@ const calendarTools = [
         body: {
           type: "string",
           description: "Optional body content for the event"
-        }
+        },
+        location: {
+          type: "string",
+          description: "Optional display name of the event location"
+        },
+        reminderMinutes: {
+          type: "number",
+          description: "Minutes before the event start to show the reminder popup; 0 disables the popup (default: Graph default, 15 minutes)"
+        },
+        recurrence: recurrenceToolProperty
       },
       required: ["subject", "start", "end"]
     },
     handler: handleCreateEvent
+  },
+  {
+    name: "update-event",
+    description: "Updates fields of an existing calendar event (PATCHes only the provided fields)",
+    inputSchema: {
+      type: "object",
+      properties: {
+        eventId: {
+          type: "string",
+          description: "The ID of the event to update"
+        },
+        subject: {
+          type: "string",
+          description: "New subject of the event"
+        },
+        start: {
+          type: "string",
+          description: "New start time of the event in ISO 8601 format"
+        },
+        end: {
+          type: "string",
+          description: "New end time of the event in ISO 8601 format"
+        },
+        body: {
+          type: "string",
+          description: "New body content for the event"
+        },
+        location: {
+          type: "string",
+          description: "New display name of the event location"
+        },
+        reminderMinutes: {
+          type: "number",
+          description: "Minutes before the event start to show the reminder popup; 0 disables the popup"
+        },
+        recurrence: recurrenceToolProperty
+      },
+      required: ["eventId"]
+    },
+    handler: handleUpdateEvent
   },
   {
     name: "cancel-event",
@@ -147,6 +198,7 @@ module.exports = {
   handleListCalendars,
   handleDeclineEvent,
   handleCreateEvent,
+  handleUpdateEvent,
   handleCancelEvent,
   handleDeleteEvent
 };
