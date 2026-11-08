@@ -89,6 +89,6 @@ describe('mcp-proxy stdio <-> HTTP bridge (end-to-end)', () => {
     await send(rpc(3, 'tools/call', { name: 'about', arguments: {} }));
     const line = JSON.parse(await nextLine());
     expect(line.id).toBe(3);
-    expect(line.result.content[0].text).toContain('M365 Assistant MCP Server v2.2.3');
+    expect(line.result.content[0].text).toContain('M365 Assistant MCP Server v2.2.4');
   }, 20000);
 });
