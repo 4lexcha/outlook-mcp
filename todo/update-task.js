@@ -4,6 +4,7 @@
 const config = require('../config');
 const { callGraphAPI } = require('../utils/graph-api');
 const { ensureAuthenticated } = require('../auth');
+const { buildRecurrence } = require('../utils/recurrence');
 
 /**
  * Update task handler. Any of title/body/importance/dueDateTime/status may be provided;
@@ -51,10 +52,23 @@ async function handleUpdateTodoTask(args = {}) {
       ? null // explicit null clears the due date in Graph
       : { dateTime: args.dueDateTime, timeZone: args.timeZone || config.DEFAULT_TIMEZONE };
   }
+  if (args.recurrence !== undefined) {
+    if (args.recurrence === null) {
+      taskPayload.recurrence = null; // explicit null clears the recurrence in Graph
+    } else {
+      const built = buildRecurrence(args.recurrence);
+      if (built.error) {
+        return {
+          content: [{ type: 'text', text: built.error }]
+        };
+      }
+      taskPayload.recurrence = built.recurrence;
+    }
+  }
 
   if (Object.keys(taskPayload).length === 0) {
     return {
-      content: [{ type: 'text', text: 'Nothing to update: provide at least one of title, body, importance, dueDateTime, status.' }]
+      content: [{ type: 'text', text: 'Nothing to update: provide at least one of title, body, importance, dueDateTime, status, recurrence.' }]
     };
   }
 

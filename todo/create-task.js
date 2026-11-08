@@ -4,6 +4,7 @@
 const config = require('../config');
 const { callGraphAPI } = require('../utils/graph-api');
 const { ensureAuthenticated } = require('../auth');
+const { buildRecurrence } = require('../utils/recurrence');
 
 /**
  * Create task handler
@@ -43,6 +44,15 @@ async function handleCreateTodoTask(args = {}) {
       dateTime: args.dueDateTime,
       timeZone: args.timeZone || config.DEFAULT_TIMEZONE
     };
+  }
+  if (args.recurrence !== undefined) {
+    const built = buildRecurrence(args.recurrence);
+    if (built.error) {
+      return {
+        content: [{ type: 'text', text: built.error }]
+      };
+    }
+    taskPayload.recurrence = built.recurrence;
   }
 
   try {

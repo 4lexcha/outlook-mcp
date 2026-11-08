@@ -6,6 +6,11 @@ const handleListTodoTasks = require('./tasks');
 const handleCreateTodoTask = require('./create-task');
 const handleUpdateTodoTask = require('./update-task');
 const handleCompleteTodoTask = require('./complete-task');
+const handleDeleteTodoTask = require('./delete-task');
+const handleCreateTodoList = require('./create-list');
+const { recurrenceToolProperty } = require('../utils/recurrence');
+
+
 
 const todoTools = [
   {
@@ -72,7 +77,8 @@ const todoTools = [
         timeZone: {
           type: 'string',
           description: 'IANA or Windows timezone for the due date (default: server DEFAULT_TIMEZONE)'
-        }
+        },
+        recurrence: recurrenceToolProperty
       },
       required: ['listId', 'title']
     },
@@ -117,7 +123,8 @@ const todoTools = [
         timeZone: {
           type: 'string',
           description: 'IANA or Windows timezone for the due date (default: server DEFAULT_TIMEZONE)'
-        }
+        },
+        recurrence: recurrenceToolProperty
       },
       required: ['listId', 'taskId']
     },
@@ -141,6 +148,40 @@ const todoTools = [
       required: ['listId', 'taskId']
     },
     handler: handleCompleteTodoTask,
+  },
+  {
+    name: 'delete-todo-task',
+    description: 'Permanently deletes a Microsoft To Do task',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        listId: {
+          type: 'string',
+          description: 'The Microsoft To Do task list ID containing the task'
+        },
+        taskId: {
+          type: 'string',
+          description: 'The Microsoft To Do task ID to delete'
+        }
+      },
+      required: ['listId', 'taskId']
+    },
+    handler: handleDeleteTodoTask,
+  },
+  {
+    name: 'create-todo-list',
+    description: 'Creates a new Microsoft To Do task list',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        displayName: {
+          type: 'string',
+          description: 'The display name of the new task list'
+        }
+      },
+      required: ['displayName']
+    },
+    handler: handleCreateTodoList,
   }
 ];
 
@@ -151,4 +192,6 @@ module.exports = {
   handleCreateTodoTask,
   handleUpdateTodoTask,
   handleCompleteTodoTask,
+  handleDeleteTodoTask,
+  handleCreateTodoList,
 };
