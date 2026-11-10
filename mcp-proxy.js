@@ -43,7 +43,9 @@ async function createProxy({ httpUrl } = {}) {
 
   const server = new Server(
     { name: 'm365-mcp-proxy', version: config.SERVER_VERSION },
-    { capabilities: {} }
+    // Declare the tools capability: capability-respecting hosts (e.g. ZCode)
+    // only poll tools/list when the handshake advertises it (found 2026-11-10).
+    { capabilities: { tools: {} } }
   );
 
   // Forward every request the SDK does not handle internally (initialize,

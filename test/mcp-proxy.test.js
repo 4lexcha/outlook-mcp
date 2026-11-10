@@ -73,6 +73,9 @@ describe('mcp-proxy stdio <-> HTTP bridge (end-to-end)', () => {
     // the service identity is asserted via tools/list and about round-trips below.
     expect(initLine.result.serverInfo.name).toBeDefined();
     expect(initLine.result.protocolVersion).toBeDefined();
+    // The bridge must advertise the tools capability: capability-respecting
+    // hosts (ZCode 0.17.x) poll tools/list only when the handshake declares it.
+    expect(initLine.result.capabilities.tools).toBeDefined();
 
     await send({ jsonrpc: '2.0', method: 'notifications/initialized' });
   });
@@ -89,6 +92,6 @@ describe('mcp-proxy stdio <-> HTTP bridge (end-to-end)', () => {
     await send(rpc(3, 'tools/call', { name: 'about', arguments: {} }));
     const line = JSON.parse(await nextLine());
     expect(line.id).toBe(3);
-    expect(line.result.content[0].text).toContain('M365 Assistant MCP Server v2.2.4');
+    expect(line.result.content[0].text).toContain('M365 Assistant MCP Server v2.2.5');
   }, 20000);
 });
